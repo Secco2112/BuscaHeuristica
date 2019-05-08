@@ -9,6 +9,22 @@ class GraphMap:
         self.mapSizeX = 42
         self.mapSizeY = 42
         self.map = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
+        self.ghost = {
+            "name": "Ghost",
+            "symbol": "F",
+            "color": (255, 0, 0)
+        }
+        self.ghostRadius = {
+            "name": "Ghost Radius",
+            "symbol": "R",
+            "color": (255, 70, 0)
+        }
+        self.ghostCount = 6
+        self.hunter = {
+            "name": "Hunter",
+            "symbol": "H",
+            "color": (255, 255, 0)
+        }
         self.mountTypes()
 
     def mountTypes(self):
@@ -95,19 +111,47 @@ class GraphMap:
 
         if return_map:
             return self.map
+        return self
+
+    def setHunterAtMiddle(self):
+        self.map[int(self.mapSizeX / 2)][int(self.mapSizeY / 2)] = self.hunter["symbol"]
+        return self
+
+    def generateRandomGhosts(self):
+        ghostPositions = []
+        for y in range(self.ghostCount):
+            ghostPositions.append([0, 0])
+
+        ghostSymbol = self.ghost["symbol"]
+
+        for i in range(0, self.ghostCount):
+            x = random.randint(0, 41)
+            y = random.randint(0, 41)
+            while self.map[x][y] == ghostSymbol:
+                x = random.randint(0, 41)
+                y = random.randint(0, 41)
+            self.map[x][y] = ghostSymbol
+
+        return self
+
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))
         fg.set_style('grass', RgbFg(124, 252, 0))
         fg.set_style('mountain', RgbFg(151, 124, 83))
-        print(fg.water)
+        fg.set_style('hunter', RgbFg(255, 255, 0))
+        fg.set_style('ghost', RgbFg(255, 0, 0))
 
         for row in self.map:
             for i, cell in enumerate(row):
                 if cell == "W":
-                    print(fg.water + cell, end="")
+                    print(fg.water + cell, end=" ")
                 elif cell == "G":
-                    print(fg.grass + cell, end="")
-                else:
-                    print(fg.mountain + cell, end="")
+                    print(fg.grass + cell, end=" ")
+                elif cell == "M":
+                    print(fg.mountain + cell, end=" ")
+                elif cell == "H":
+                    print(fg.hunter + cell, end=" ")
+                elif cell == "F":
+                    print(fg.ghost + cell, end=" ")
             print("")
