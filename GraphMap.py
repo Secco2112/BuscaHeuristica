@@ -28,6 +28,7 @@ class GraphMap:
         }
         self.ghostPositions = []
         self.hunterPosition = []
+        self.validDirections = ["up", "down", "left", "right"]
         self.mountTypes()
 
     def mountTypes(self):
@@ -116,8 +117,10 @@ class GraphMap:
         return self
 
     def setHunterAtMiddle(self):
-        self.map[int(self.mapSizeX / 2)][int(self.mapSizeY / 2)] = self.hunter["symbol"]
-        self.hunterPosition.append([int(self.mapSizeX / 2)][int(self.mapSizeY / 2)])
+        x = int(self.mapSizeX / 2)
+        y = int(self.mapSizeY / 2)
+        self.map[x][y] = self.hunter["symbol"]
+        self.hunterPosition = [x, y]
         return self
 
     def generateRandomGhosts(self):
@@ -148,7 +151,14 @@ class GraphMap:
             for j in range(y - self.radiusSize, y + self.radiusSize + 1):
                 if self.isValidPoint(i, j):
                     if self.map[i][j] != self.ghost["symbol"] and self.map[i][j] != self.hunter["symbol"]:
-                        self.map[i][j] = self.ghostRadius["symbol"]
+                        self.map[i][j] = self.hunterRadius["symbol"]
+
+    def move(self):
+        randomDirection = self.validDirections[random.randint(0, len(self.validDirections) - 1)]
+        nextPosition = None
+
+        if randomDirection == "right":
+            pass
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))
