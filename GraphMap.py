@@ -14,17 +14,20 @@ class GraphMap:
             "symbol": "F",
             "color": (255, 0, 0)
         }
-        self.ghostRadius = {
-            "name": "Ghost Radius",
+        self.hunterRadius = {
+            "name": "Hunter Radius",
             "symbol": "R",
             "color": (255, 70, 0)
         }
+        self.radiusSize = 3
         self.ghostCount = 6
         self.hunter = {
             "name": "Hunter",
             "symbol": "H",
             "color": (255, 255, 0)
         }
+        self.ghostPositions = []
+        self.hunterPosition = []
         self.mountTypes()
 
     def mountTypes(self):
@@ -66,7 +69,6 @@ class GraphMap:
                 new_row.append(0)
             noise_map.append(new_row)
 
-        new_value = 0
         top_of_range = 0
         bottom_of_range = 0
         for y in range(self.mapSizeX):
@@ -115,6 +117,7 @@ class GraphMap:
 
     def setHunterAtMiddle(self):
         self.map[int(self.mapSizeX / 2)][int(self.mapSizeY / 2)] = self.hunter["symbol"]
+        self.hunterPosition.append([int(self.mapSizeX / 2)][int(self.mapSizeY / 2)])
         return self
 
     def generateRandomGhosts(self):
@@ -131,9 +134,21 @@ class GraphMap:
                 x = random.randint(0, 41)
                 y = random.randint(0, 41)
             self.map[x][y] = ghostSymbol
+            self.ghostPositions.append([x, y])
 
         return self
 
+    def isValidPoint(self, x, y):
+        return 0 <= x < self.mapSizeX and 0 <= y < self.mapSizeY
+
+    def setHunterRadius(self):
+        x = self.hunterPosition[0]
+        y = self.hunterPosition[1]
+        for i in range(x - self.radiusSize, x + self.radiusSize + 1):
+            for j in range(y - self.radiusSize, y + self.radiusSize + 1):
+                if self.isValidPoint(i, j):
+                    if self.map[i][j] != self.ghost["symbol"] and self.map[i][j] != self.hunter["symbol"]:
+                        self.map[i][j] = self.ghostRadius["symbol"]
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))
@@ -141,6 +156,7 @@ class GraphMap:
         fg.set_style('mountain', RgbFg(151, 124, 83))
         fg.set_style('hunter', RgbFg(255, 255, 0))
         fg.set_style('ghost', RgbFg(255, 0, 0))
+        fg.set_style('radius', RgbFg(255, 70, 0))
 
         for row in self.map:
             for i, cell in enumerate(row):
@@ -154,4 +170,6 @@ class GraphMap:
                     print(fg.hunter + cell, end=" ")
                 elif cell == "F":
                     print(fg.ghost + cell, end=" ")
+                elif cell == "R":
+                    print(fg.radius + cell, end=" ")
             print("")
