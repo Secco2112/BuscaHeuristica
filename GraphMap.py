@@ -153,12 +153,32 @@ class GraphMap:
                     if self.map[i][j] != self.ghost["symbol"] and self.map[i][j] != self.hunter["symbol"]:
                         self.map[i][j] = self.hunterRadius["symbol"]
 
-    def move(self):
-        randomDirection = self.validDirections[random.randint(0, len(self.validDirections) - 1)]
-        nextPosition = None
+    def getNextPositionToMove(self):
+        x = -1
+        y = -1
 
-        if randomDirection == "right":
-            pass
+        while not self.isValidPoint(x, y):
+            randomDirection = self.validDirections[random.randint(0, len(self.validDirections) - 1)]
+
+            if randomDirection == "up":
+                x = self.hunterPosition[0] - 1
+                y = self.hunterPosition[1]
+            elif randomDirection == "right":
+                x = self.hunterPosition[0]
+                y = self.hunterPosition[1] + 1
+            elif randomDirection == "left":
+                x = self.hunterPosition[0]
+                y = self.hunterPosition[1] - 1
+            elif randomDirection == "bottom":
+                x = self.hunterPosition[0]
+                y = self.hunterPosition[1] + 1
+
+        nextPosition = [x, y]
+        return nextPosition
+
+    def move(self):
+        next_position = self.getNextPositionToMove()
+        print(next_position)
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))
