@@ -9,6 +9,7 @@ class GraphMap:
         self.mapSizeX = 42
         self.mapSizeY = 42
         self.map = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
+        self.original_map = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
         self.ghost = {
             "name": "Ghost",
             "symbol": "F",
@@ -20,6 +21,7 @@ class GraphMap:
             "color": (255, 70, 0)
         }
         self.radiusSize = 3
+        self.radiusPosition = []
         self.ghostCount = 6
         self.hunter = {
             "name": "Hunter",
@@ -111,6 +113,7 @@ class GraphMap:
                     row[i] = "M"
 
         self.map = noise_map
+        self.original_map = noise_map
 
         if return_map:
             return self.map
@@ -151,7 +154,8 @@ class GraphMap:
             for j in range(y - self.radiusSize, y + self.radiusSize + 1):
                 if self.isValidPoint(i, j):
                     if self.map[i][j] != self.ghost["symbol"] and self.map[i][j] != self.hunter["symbol"]:
-                        self.map[i][j] = self.hunterRadius["symbol"]
+                        self.radiusPosition.append([i, j])
+                        #self.map[i][j] = self.hunterRadius["symbol"]
 
     def getNextPositionToMove(self):
         x = -1
@@ -178,7 +182,11 @@ class GraphMap:
 
     def move(self):
         next_position = self.getNextPositionToMove()
-        print(next_position)
+        current_hunter_position = self.hunterPosition
+        self.hunterPosition = next_position
+
+        self.map[current_hunter_position[0]][current_hunter_position[1]] = self.original_map[current_hunter_position[0]][current_hunter_position[1]]
+        self.map[next_position[0]][next_position[1]] = self.hunter["symbol"]
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))
