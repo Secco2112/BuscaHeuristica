@@ -1,5 +1,6 @@
 import random
 from sty import fg, bg, RgbFg
+from AStar import AStar
 
 
 class GraphMap:
@@ -31,6 +32,8 @@ class GraphMap:
         self.ghostPositions = []
         self.hunterPosition = []
         self.validDirections = ["up", "down", "left", "right"]
+        self.mapFile = None
+        self.visitedPoints = []
         self.mountTypes()
 
     def mountTypes(self):
@@ -119,9 +122,35 @@ class GraphMap:
             return self.map
         return self
 
+    def setMapFile(self, file):
+        self.mapFile = file
+        return self
+
+    def getMapFromFile(self):
+        if self.mapFile:
+            map = []
+
+            for y in range(self.mapSizeX):
+                new_row = []
+                for x in range(self.mapSizeY):
+                    new_row.append(0)
+                map.append(new_row)
+
+            file = open(self.mapFile, "rb")
+            for i, line in enumerate(file.readlines()):
+                line = line.decode("utf-8")
+                for j, char in enumerate(line):
+                    if i < self.mapSizeX and j < self.mapSizeY:
+                        map[i][j] = char.upper()
+            self.map = map
+            self.original_map = map
+        return self
+
     def setHunterAtMiddle(self):
-        x = int(self.mapSizeX / 2)
-        y = int(self.mapSizeY / 2)
+        #x = int(self.mapSizeX / 2)
+        #y = int(self.mapSizeY / 2)
+        x = 19
+        y = 19
         self.map[x][y] = self.hunter["symbol"]
         self.hunterPosition = [x, y]
         return self
@@ -157,36 +186,39 @@ class GraphMap:
                         self.radiusPosition.append([i, j])
                         #self.map[i][j] = self.hunterRadius["symbol"]
 
+    def visistedPoint(self, x, y):
+        for index, array in enumerate(self.visitedPoints):
+            if array[0] == x and array[1] == y:
+                return True
+        return False
+
     def getNextPositionToMove(self):
         x = -1
         y = -1
 
-        while not self.isValidPoint(x, y):
-            randomDirection = self.validDirections[random.randint(0, len(self.validDirections) - 1)]
+        while not self.isValidPoint(x, y) and not self.visistedPoint(x, y):
+            x = random.randint(0, self.mapSizeX - 1)
+            y = random.randint(0, self.mapSizeY - 1)
 
-            if randomDirection == "up":
-                x = self.hunterPosition[0] - 1
-                y = self.hunterPosition[1]
-            elif randomDirection == "right":
-                x = self.hunterPosition[0]
-                y = self.hunterPosition[1] + 1
-            elif randomDirection == "left":
-                x = self.hunterPosition[0]
-                y = self.hunterPosition[1] - 1
-            elif randomDirection == "bottom":
-                x = self.hunterPosition[0]
-                y = self.hunterPosition[1] + 1
-
+        self.visitedPoints.append([x, y])
         nextPosition = [x, y]
         return nextPosition
 
-    def move(self):
-        next_position = self.getNextPositionToMove()
+    def moveTo(self, x, y):
+        #next_position = self.getNextPositionToMove()
+        next_position = [x, y]
         current_hunter_position = self.hunterPosition
         self.hunterPosition = next_position
 
-        self.map[current_hunter_position[0]][current_hunter_position[1]] = self.original_map[current_hunter_position[0]][current_hunter_position[1]]
-        self.map[next_position[0]][next_position[1]] = self.hunter["symbol"]
+        #self.map[current_hunter_position[0]][current_hunter_position[1]] = self.original_map[current_hunter_position[0]][current_hunter_position[1]]
+        #self.map[next_position[0]][next_position[1]] = self.hunter["symbol"]
+        return self
+
+    def foundGhostInPosition(self, x, y):
+        for ghost in self.ghostPositions:
+            if ghost[0] == x and ghost[1] == y:
+                return True
+        return False
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))

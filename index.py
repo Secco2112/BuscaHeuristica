@@ -2,11 +2,17 @@ from GraphMap import GraphMap
 from GenerateMap import GenerateMap
 
 if __name__ == '__main__':
-    gm = GenerateMap()
-    gm.setFile("Captura de tela de 2019-05-17 20-19-31.pdf").parseFile()
-    exit()
+    foundedGhosts = []
 
     graphMap = GraphMap()
-    graphMap.generateRandomMap().setHunterAtMiddle().generateRandomGhosts().setHunterRadius()
-    graphMap.move()
-    graphMap.printMap()
+    graphMap.setMapFile("mapa.txt").getMapFromFile().setHunterAtMiddle().generateRandomGhosts().setHunterRadius()
+
+    if len(foundedGhosts) < graphMap.ghostCount:
+        pos = graphMap.getNextPositionToMove()
+        x = pos[0]
+        y = pos[1]
+
+        if graphMap.foundGhostInPosition(x, y):
+            graphMap.moveTo(x, y)
+
+    #graphMap.printMap()
