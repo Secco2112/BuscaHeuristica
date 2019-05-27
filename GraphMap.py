@@ -224,6 +224,8 @@ class GraphMap:
         self.hunterPosition = [goal[0], goal[1]]
         self.map[x][y] = self.hunter["symbol"]
 
+        print("Caminho: [%d, %d] -> [%d, %d]" %(start[0], start[1], goal[0], goal[1]), end="\n\n")
+
         return self
 
     def foundGhostInPosition(self, x, y):
