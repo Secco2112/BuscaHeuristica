@@ -23,7 +23,9 @@ class AStar:
                 break
 
             for next in graph.neighbors(current):
-                new_cost = cost_so_far[current] + graph.cost(current, next)
+                tile = graph.original_map[next[0]][next[1]]
+                cost = graph.getTypeBy("symbol", tile)["cost"]
+                new_cost = cost_so_far[current] + cost
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
                     cost_so_far[next] = new_cost
                     priority = new_cost + self.heuristic(goal, next)

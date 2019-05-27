@@ -34,6 +34,7 @@ class GraphMap:
         self.validDirections = ["up", "down", "left", "right"]
         self.mapFile = None
         self.visitedPoints = []
+        self.a_star = AStar()
         self.mountTypes()
 
     def mountTypes(self):
@@ -65,6 +66,15 @@ class GraphMap:
             if type[key] == value:
                 return type
         return None
+
+    def neighbors(self, pos):
+        (x, y) = pos
+        positions = [(x + 1, y), (x, y - 1), (x - 1, y), (x, y + 1)]
+        results = []
+        for p in positions:
+            if self.isValidPoint(p[0], p[1]):
+                results.append((p[0], p[1]))
+        return results
 
     def getNoiseMap(self):
         noise_map = []
@@ -142,8 +152,8 @@ class GraphMap:
                 for j, char in enumerate(line):
                     if i < self.mapSizeX and j < self.mapSizeY:
                         map[i][j] = char.upper()
-            self.map = map
-            self.original_map = map
+                        self.map[i][j] = char.upper()
+                        self.original_map[i][j] = char.upper()
         return self
 
     def setHunterAtMiddle(self):
@@ -205,13 +215,15 @@ class GraphMap:
         return nextPosition
 
     def moveTo(self, x, y):
-        #next_position = self.getNextPositionToMove()
         next_position = [x, y]
-        current_hunter_position = self.hunterPosition
-        self.hunterPosition = next_position
 
-        #self.map[current_hunter_position[0]][current_hunter_position[1]] = self.original_map[current_hunter_position[0]][current_hunter_position[1]]
-        #self.map[next_position[0]][next_position[1]] = self.hunter["symbol"]
+        (start, goal) = (self.hunterPosition[0], self.hunterPosition[1]), (next_position[0], next_position[1])
+        #came_from, cost_so_far = self.a_star.search(self, start, goal)
+
+        self.map[self.hunterPosition[0]][self.hunterPosition[1]] = self.original_map[self.hunterPosition[0]][self.hunterPosition[1]]
+        self.hunterPosition = [goal[0], goal[1]]
+        self.map[x][y] = self.hunter["symbol"]
+
         return self
 
     def foundGhostInPosition(self, x, y):
@@ -219,6 +231,15 @@ class GraphMap:
             if ghost[0] == x and ghost[1] == y:
                 return True
         return False
+
+    def sweepInRadius(self, x, y):
+        positions = []
+        for i in range(x - self.radiusSize, x + self.radiusSize + 1):
+            for j in range(y - self.radiusSize, y + self.radiusSize + 1):
+                if self.isValidPoint(i, j):
+                    if self.map[i][j] == self.ghost["symbol"]:
+                        positions.append([i, j])
+        return positions
 
     def printMap(self):
         fg.set_style('water', RgbFg(0, 119, 190))
@@ -241,5 +262,7 @@ class GraphMap:
                 elif cell == "F":
                     print(fg.ghost + cell, end=" ")
                 elif cell == "R":
+                    print(fg.radius + cell, end=" ")
+                elif cell == "P":
                     print(fg.radius + cell, end=" ")
             print("")
