@@ -34,7 +34,6 @@ class GraphMap:
         self.validDirections = ["up", "down", "left", "right"]
         self.mapFile = None
         self.visitedPoints = []
-        self.a_star = AStar()
         self.mountTypes()
 
     def mountTypes(self):
@@ -217,8 +216,13 @@ class GraphMap:
     def moveTo(self, x, y):
         next_position = [x, y]
 
+        a_star = AStar()
+
         (start, goal) = (self.hunterPosition[0], self.hunterPosition[1]), (next_position[0], next_position[1])
-        #came_from, cost_so_far = self.a_star.search(self, start, goal)
+        came_from, cost_so_far = a_star.search(self, start, goal)
+
+        #for cost in cost_so_far:
+            #print(cost)
 
         self.map[self.hunterPosition[0]][self.hunterPosition[1]] = self.original_map[self.hunterPosition[0]][self.hunterPosition[1]]
         self.hunterPosition = [goal[0], goal[1]]

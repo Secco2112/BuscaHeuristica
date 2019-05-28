@@ -44,7 +44,7 @@ if __name__ == '__main__':
             pass
             #print("Nenhum fantasma encontrado nas coordenadas [x = %d, y = %d] e dentro de seu raio" %(x, y))
 
-    print(u"Movendo ca\u00E7ador para o meio do mapa...")
-    graphMap.moveTo(19, 19)
+    #print(u"Movendo caçador para o meio do mapa...")
+    #graphMap.moveTo(19, 19)
 
     graphMap.printMap()
