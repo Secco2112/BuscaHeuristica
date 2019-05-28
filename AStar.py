@@ -20,7 +20,12 @@ class AStar:
             current = self.frontier.get()
 
             if current == goal:
-                break
+                path = [current]
+                while current in came_from:
+                    current = came_from[current]
+                    path.append(current)
+                path.reverse()
+                return path, cost_so_far[goal]
 
             for next in graph.neighbors(current):
                 tile = graph.original_map[next[0]][next[1]]

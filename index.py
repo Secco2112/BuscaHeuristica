@@ -16,6 +16,9 @@ if __name__ == '__main__':
     graphMap = GraphMap()
     graphMap.setMapFile("mapa.txt").getMapFromFile().setHunterAtMiddle().generateRandomGhosts().setHunterRadius()
 
+    print("Mapa inicial")
+    graphMap.printMap()
+
     while len(foundedGhosts) < graphMap.ghostCount:
         pos = graphMap.getNextPositionToMove()
         x = pos[0]
@@ -44,7 +47,7 @@ if __name__ == '__main__':
             pass
             #print("Nenhum fantasma encontrado nas coordenadas [x = %d, y = %d] e dentro de seu raio" %(x, y))
 
-    #print(u"Movendo caçador para o meio do mapa...")
-    #graphMap.moveTo(19, 19)
+    print("Movendo caçador para o meio do mapa...")
+    graphMap.moveTo(19, 19)
 
-    graphMap.printMap()
+    #graphMap.printMap()
