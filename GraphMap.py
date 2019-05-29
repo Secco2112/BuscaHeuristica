@@ -11,7 +11,7 @@ class GraphMap:
         self.mapSizeY = 42
         self.map = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
         self.original_map = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
-        self.map_before_path = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
+        self.path_map = [[" "] * self.mapSizeX for _ in range(self.mapSizeY)]
         self.ghost = {
             "name": "Ghost",
             "symbol": "F",
@@ -35,6 +35,7 @@ class GraphMap:
         self.validDirections = ["up", "down", "left", "right"]
         self.mapFile = None
         self.visitedPoints = []
+        self.totalCost = 0
         self.mountTypes()
 
     def mountTypes(self):
@@ -127,7 +128,7 @@ class GraphMap:
 
         self.map = noise_map
         self.original_map = noise_map
-        self.map_before_path = noise_map
+        self.path_map = noise_map
 
         if return_map:
             return self.map
@@ -155,7 +156,7 @@ class GraphMap:
                         map[i][j] = char.upper()
                         self.map[i][j] = char.upper()
                         self.original_map[i][j] = char.upper()
-                        self.map_before_path[i][j] = char.upper()
+                        self.path_map[i][j] = char.upper()
         return self
 
     def setHunterAtMiddle(self):
@@ -164,7 +165,7 @@ class GraphMap:
         x = 19
         y = 19
         self.map[x][y] = self.hunter["symbol"]
-        self.map_before_path[x][y] = self.hunter["symbol"]
+        self.path_map[x][y] = self.hunter["symbol"]
         self.hunterPosition = [x, y]
         return self
 
@@ -178,11 +179,11 @@ class GraphMap:
         for i in range(0, self.ghostCount):
             x = random.randint(0, 41)
             y = random.randint(0, 41)
-            while self.map[x][y] == ghostSymbol:
+            while self.map[x][y] == ghostSymbol or self.map[x][y] == self.hunter["symbol"]:
                 x = random.randint(0, 41)
                 y = random.randint(0, 41)
             self.map[x][y] = ghostSymbol
-            self.map_before_path[x][y] = ghostSymbol
+            self.path_map[x][y] = ghostSymbol
             self.ghostPositions.append([x, y])
 
         return self
@@ -226,23 +227,30 @@ class GraphMap:
         (start, goal) = (self.hunterPosition[0], self.hunterPosition[1]), (next_position[0], next_position[1])
         path, cost = a_star.search(self, start, goal)
 
-        self.map[self.hunterPosition[0]][self.hunterPosition[1]] = self.original_map[self.hunterPosition[0]][self.hunterPosition[1]]
+        #self.map[self.hunterPosition[0]][self.hunterPosition[1]] = self.original_map[self.hunterPosition[0]][self.hunterPosition[1]]
         self.hunterPosition = [goal[0], goal[1]]
-        self.map[x][y] = self.hunter["symbol"]
-        self.map_before_path[x][y] = self.hunter["symbol"]
+        #self.map[x][y] = self.hunter["symbol"]
+        #self.path_map[x][y] = self.hunter["symbol"]
+
+        self.totalCost += cost
 
         print("Caminho: [%d, %d] -> [%d, %d]" %(start[0], start[1], goal[0], goal[1]), end="\n")
-        print("Custo: %d\n" %cost)
+        print("Custo: %d" %cost)
+        print("Custo ate o momento: %d\n" %self.totalCost)
 
         for i, p in enumerate(path):
             if p:
-                if i == 1:
-                    self.map[p[0]][p[1]] = "A"
+                if i == len(path) - 1:
+                    self.path_map[p[0]][p[1]] = "H"
                 else:
-                    self.map[p[0]][p[1]] = "P"
-
+                    self.path_map[p[0]][p[1]] = "P"
         self.printMap()
-        self.map = self.map_before_path
+        for i, p in enumerate(path):
+            if p:
+                if i == len(path) - 1:
+                    self.path_map[p[0]][p[1]] = "H"
+                else:
+                    self.path_map[p[0]][p[1]] = self.original_map[p[0]][p[1]]
 
         return self
 
@@ -270,7 +278,7 @@ class GraphMap:
         fg.set_style('radius', RgbFg(255, 70, 0))
         fg.set_style('console', RgbFg(255, 255, 255))
 
-        for row in self.map_before_path:
+        for row in self.path_map:
             for i, cell in enumerate(row):
                 if cell == "W":
                     print(fg.water + cell, end=" ")
