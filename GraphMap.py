@@ -138,7 +138,7 @@ class GraphMap:
         self.mapFile = file
         return self
 
-    def getMapFromFile(self):
+    def generateMapFromFile(self):
         if self.mapFile:
             map = []
 
@@ -174,16 +174,14 @@ class GraphMap:
         for y in range(self.ghostCount):
             ghostPositions.append([0, 0])
 
-        ghostSymbol = self.ghost["symbol"]
-
         for i in range(0, self.ghostCount):
             x = random.randint(0, 41)
             y = random.randint(0, 41)
-            while self.map[x][y] == ghostSymbol or self.map[x][y] == self.hunter["symbol"]:
+            while self.map[x][y] == self.ghost["symbol"] or self.map[x][y] == self.hunter["symbol"]:
                 x = random.randint(0, 41)
                 y = random.randint(0, 41)
-            self.map[x][y] = ghostSymbol
-            self.path_map[x][y] = ghostSymbol
+            self.map[x][y] = self.ghost["symbol"]
+            self.path_map[x][y] = self.ghost["symbol"]
             self.ghostPositions.append([x, y])
 
         return self
@@ -295,4 +293,4 @@ class GraphMap:
                 elif cell == "P":
                     print(fg.radius + cell, end=" ")
             print(fg.console + "", end="\n")
-        print("\n\n\n\n")
+        print("\n\n\n")

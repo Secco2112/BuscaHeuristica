@@ -14,7 +14,7 @@ if __name__ == '__main__':
     foundedGhosts = []
 
     graphMap = GraphMap()
-    graphMap.setMapFile("mapa.txt").getMapFromFile().setHunterAtMiddle().generateRandomGhosts().setHunterRadius()
+    graphMap.setMapFile("mapa.txt").generateMapFromFile().setHunterAtMiddle().generateRandomGhosts()
 
     print("Mapa inicial")
     graphMap.printMap()
